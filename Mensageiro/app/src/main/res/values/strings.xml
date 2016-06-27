@@ -5,4 +5,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="contacts_list">Lista de Contatos</string>
+    <string name="Confirm">Confirm</string>
+    <string name="fullname">fullname</string>
+    <string name="nickname">nickname</string>
 </resources>
