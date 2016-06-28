@@ -21,8 +21,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //FIXME: apply correct behavior
-        changeFragment(new ContactsListFragment(), getString(R.string.contacts_list));
+        changeFragment(new NewContactFragment(), getString(R.string.new_account));
     }
 
     protected void changeFragment(final Fragment fragment, final String title) {
