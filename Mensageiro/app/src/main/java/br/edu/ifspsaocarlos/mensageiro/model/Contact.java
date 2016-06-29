@@ -21,6 +21,11 @@ public class Contact {
     @Expose
     private String nickName;
 
+    public Contact(String fullName, String nickName) {
+        this.fullName = fullName;
+        this.nickName = nickName;
+    }
+
     public String getFullName() {
         return fullName;
     }

@@ -2,8 +2,10 @@ package br.edu.ifspsaocarlos.mensageiro.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,14 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import br.edu.ifspsaocarlos.mensageiro.R;
+import br.edu.ifspsaocarlos.mensageiro.model.Contact;
+import br.edu.ifspsaocarlos.mensageiro.networking.BaseNetworkConfig;
+import br.edu.ifspsaocarlos.mensageiro.networking.ContactsInterface;
+import br.edu.ifspsaocarlos.mensageiro.util.SharedPreferencesUtil;
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 public class NewContactFragment extends Fragment {
 
@@ -49,8 +59,39 @@ public class NewContactFragment extends Fragment {
     }
 
     private void saveAccount(final String fullname, final String nickname) {
-        //TODO after login
-        ((MainActivity) getActivity()).changeFragment(new ContactsListFragment(), getString(R
-                .string.contacts_list));
+
+        Contact contact = new Contact(fullname, nickname);
+        final ContactsInterface service = BaseNetworkConfig.createService(ContactsInterface.class);
+        Call<Contact> response = service.newContact(contact);
+
+        response.enqueue(new Callback<Contact>() {
+            @Override
+            public void onResponse(Response<Contact> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    final Contact contact = response.body();
+                    if (contact != null) {
+                        SharedPreferencesUtil.saveString("id", String.valueOf(contact.getId()));
+                        SharedPreferencesUtil.saveString("fullname", contact.getFullName());
+                        SharedPreferencesUtil.saveString("nickname", contact.getNickName());
+
+                        ((MainActivity) getActivity()).changeFragment(new ContactsListFragment(),
+                                getString(R.string.contacts_list));
+                    }
+                } else {
+                    showMessage(R.string.generic_error);
+                    Log.d(TAG, "unsuccessful response");
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                showMessage(R.string.generic_error);
+                Log.d(TAG, "failure to add new contact");
+            }
+        });
+    }
+
+    private void showMessage(int messageResourceId) {
+        Snackbar.make(getView(), getString(messageResourceId), Snackbar.LENGTH_SHORT).show();
     }
 }
