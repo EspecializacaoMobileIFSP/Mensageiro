@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import br.edu.ifspsaocarlos.mensageiro.R;
+import br.edu.ifspsaocarlos.mensageiro.model.Contact;
 import br.edu.ifspsaocarlos.mensageiro.model.Message;
 import br.edu.ifspsaocarlos.mensageiro.networking.BaseNetworkConfig;
 import br.edu.ifspsaocarlos.mensageiro.networking.MessagesInterface;
@@ -28,12 +29,7 @@ import retrofit.Retrofit;
 public class MessagesListFragment extends Fragment {
 
     private static final String TAG = MessagesListFragment.class.getSimpleName();
-
     private View mRootView;
-
-
-    public MessagesListFragment() {
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,14 +38,21 @@ public class MessagesListFragment extends Fragment {
         setHasOptionsMenu(true);
         mRootView = inflater.inflate(R.layout.fragment_messages_list, container, false);
 
-        downloadMessages();
+        handleMessages();
         return mRootView;
     }
 
-    private void downloadMessages() {
+    private void handleMessages() {
+        if (getArguments() != null) {
+            final Contact contact = getArguments().getParcelable("contact_parcel");
+            downloadMessages(String.valueOf(contact.getId()));
+        }
+    }
+
+    private void downloadMessages(String toContact) {
         final MessagesInterface service = BaseNetworkConfig.createService(MessagesInterface.class);
 
-        final Call<MessagesList> call = service.getMessagesList("0", "1", "1");
+        final Call<MessagesList> call = service.getMessagesList("0", "1", toContact);
         call.enqueue(
                 new Callback<MessagesList>() {
                     @Override

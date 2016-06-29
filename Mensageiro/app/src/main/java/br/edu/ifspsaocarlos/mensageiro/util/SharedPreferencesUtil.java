@@ -9,7 +9,7 @@ import android.content.SharedPreferences;
  */
 public class SharedPreferencesUtil {
 
-    private final String PREFERENCE_NAME = "MESSENGER_PREFS";
+    private static final String PREFERENCE_NAME = "MESSENGER_PREFS";
 
     public static void saveString(final String key, final String value) {
         final Context context = MessengerApplication.getInstance().getApplicationContext();

@@ -1,20 +1,23 @@
 package br.edu.ifspsaocarlos.mensageiro.ui;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
+import android.view.View;
 
 import br.edu.ifspsaocarlos.mensageiro.R;
-import br.edu.ifspsaocarlos.mensageiro.util.SharedPreferencesUtil;
+import br.edu.ifspsaocarlos.mensageiro.model.Account;
+import br.edu.ifspsaocarlos.mensageiro.ui.contract.BaseActivityView;
+import br.edu.ifspsaocarlos.mensageiro.util.MessengerApplication;
 
 /**
  * @author maiko.trindade
  * @since 19/06/2016
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BaseActivityView {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,21 +30,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void verifyUserSession() {
-        final String userId = SharedPreferencesUtil.getString("id");
-        if (TextUtils.isEmpty(userId)) {
-            changeFragment(new NewContactFragment(), getString(R.string.new_account));
+        final Account account = MessengerApplication.getInstance().getAccount();
+        if (account != null) {
+            changeFragment(new ContactsListFragment(this), getString(R.string.contacts_list));
         } else {
-            changeFragment(new ContactsListFragment(), getString(R.string.contacts_list));
+            changeFragment(new NewContactFragment(this), getString(R.string.new_account));
         }
     }
 
-    protected void changeFragment(final Fragment fragment, final String title) {
+    @Override
+    public void changeFragment(final Fragment fragment, final String title) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.content, fragment)
                 .addToBackStack(fragment.getTag())
                 .commit();
         setTitle(title);
+    }
+
+    @Override
+    public void showMessage(View view, int messageResourceId) {
+        Snackbar.make(view, getString(messageResourceId), Snackbar.LENGTH_SHORT).show();
     }
 
 }

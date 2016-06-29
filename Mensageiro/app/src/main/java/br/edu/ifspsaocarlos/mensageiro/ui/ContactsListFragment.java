@@ -19,7 +19,9 @@ import br.edu.ifspsaocarlos.mensageiro.networking.BaseNetworkConfig;
 import br.edu.ifspsaocarlos.mensageiro.networking.ContactsInterface;
 import br.edu.ifspsaocarlos.mensageiro.networking.ContactsList;
 import br.edu.ifspsaocarlos.mensageiro.ui.adapter.ContactsListAdapter;
+import br.edu.ifspsaocarlos.mensageiro.ui.callback.MessageListCallback;
 import br.edu.ifspsaocarlos.mensageiro.ui.component.DividerItemDecorator;
+import br.edu.ifspsaocarlos.mensageiro.ui.contract.BaseActivityView;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Retrofit;
@@ -31,8 +33,12 @@ import retrofit.Retrofit;
 public class ContactsListFragment extends Fragment {
 
     private static final String TAG = ContactsListFragment.class.getSimpleName();
-
     private View mRootView;
+    private BaseActivityView mBaseView;
+
+    public ContactsListFragment(BaseActivityView view) {
+        mBaseView = view;
+    }
 
     @Nullable
     @Override
@@ -41,7 +47,6 @@ public class ContactsListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mRootView = inflater.inflate(R.layout.fragment_contacts_list, container, false);
-
         downloadContacts();
         return mRootView;
     }
@@ -53,14 +58,23 @@ public class ContactsListFragment extends Fragment {
                 DividerItemDecorator.VERTICAL_LIST));
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(mRootView.getContext()));
-
-        final ContactsListAdapter adapter = new ContactsListAdapter(contacts);
+        final ContactsListAdapter adapter = new ContactsListAdapter(contacts,
+                new MessageListCallback() {
+                    @Override
+                    public void openContactMessages(Contact contact) {
+                        final MessagesListFragment messagesListFragment = new
+                                MessagesListFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelable("contact_parcel", contact);
+                        messagesListFragment.setArguments(bundle);
+                        mBaseView.changeFragment(messagesListFragment, contact.getNickName());
+                    }
+                });
         recyclerView.setAdapter(adapter);
     }
 
     private void downloadContacts() {
         final ContactsInterface service = BaseNetworkConfig.createService(ContactsInterface.class);
-
         final Call<ContactsList> call = service.getContactsList();
         call.enqueue(
                 new Callback<ContactsList>() {
@@ -72,13 +86,15 @@ public class ContactsListFragment extends Fragment {
                             List<Contact> contacts = contactsList.getContacts();
                             configureRecyclerView(contacts);
                         } else {
-                            Log.e(TAG, response.code() + " - " + response.message());
+                            mBaseView.showMessage(getView(), R.string.generic_error);
+                            Log.e(TAG, "unsuccessful download contacts");
                         }
                     }
 
                     @Override
                     public void onFailure(Throwable t) {
-                        Log.e(TAG, t.getMessage());
+                        mBaseView.showMessage(getView(), R.string.generic_error);
+                        Log.e(TAG, "fail to download contact");
                     }
                 }
         );
