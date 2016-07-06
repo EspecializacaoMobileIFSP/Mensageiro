@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements BaseActivityView 
         if (account != null) {
             changeFragment(new ContactsListFragment(this), getString(R.string.contacts_list));
         } else {
-            changeFragment(new NewContactFragment(this), getString(R.string.new_account));
+            changeFragment(new LoginFragment(this), getString(R.string.new_account));
         }
     }
 
