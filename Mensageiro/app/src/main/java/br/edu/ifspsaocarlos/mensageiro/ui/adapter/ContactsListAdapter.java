@@ -4,7 +4,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -66,13 +67,16 @@ public class ContactsListAdapter extends RecyclerView.Adapter<ContactsListAdapte
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private TextView mFullNameTxtView;
         private TextView mNickNameTxtView;
-        private LinearLayout mContainerLayout;
+        private RelativeLayout mContainerLayout;
+        private ImageView mMenuImageView;
 
         public ViewHolder(View view) {
             super(view);
             mFullNameTxtView = (TextView) view.findViewById(R.id.full_name_text_view);
             mNickNameTxtView = (TextView) view.findViewById(R.id.nick_name_text_view);
-            mContainerLayout = (LinearLayout) view.findViewById(R.id.item_container_linear_layout);
+            mContainerLayout = (RelativeLayout) view.findViewById(R.id
+                    .item_container_linear_layout);
+            mMenuImageView = (ImageView) view.findViewById(R.id.menu_image_view);
         }
     }
 }
