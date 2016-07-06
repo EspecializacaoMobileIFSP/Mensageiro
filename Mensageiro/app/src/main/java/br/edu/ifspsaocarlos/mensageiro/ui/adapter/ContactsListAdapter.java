@@ -1,5 +1,6 @@
 package br.edu.ifspsaocarlos.mensageiro.ui.adapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,8 +46,10 @@ public class ContactsListAdapter extends RecyclerView.Adapter<ContactsListAdapte
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
+        final Context context = holder.itemView.getContext();
         final Contact contact = mContacts.get(position);
+
         holder.mFullNameTxtView.setText(contact.getFullName());
         holder.mNickNameTxtView.setText(contact.getNickName());
         holder.mContainerLayout.setOnClickListener(new View.OnClickListener() {
@@ -57,6 +60,17 @@ public class ContactsListAdapter extends RecyclerView.Adapter<ContactsListAdapte
                 }
             }
         });
+        holder.mMenuImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                mPosition = holder.getLayoutPosition();
+//                final PopupMenu popup = new PopupMenu(context, v);
+//                popup.setOnMenuItemClickListener((PopupMenu.OnMenuItemClickListener) context);
+//                popup.inflate(R.menu.menu_contact_list_popup);
+//                popup.show();
+            }
+        });
+
     }
 
     @Override

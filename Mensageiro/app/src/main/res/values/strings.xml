@@ -9,5 +9,7 @@
     <string name="nickname">apelido</string>
 
     <string name="generic_error">Ops! Houve um erro ao processar sua solicitação.</string>
+    <string name="editar">Editar</string>
+    <string name="deletar">Deletar</string>
 
 </resources>
