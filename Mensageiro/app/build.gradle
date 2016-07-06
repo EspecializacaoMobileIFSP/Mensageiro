@@ -10,6 +10,7 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -25,6 +26,7 @@ dependencies {
     compile "com.android.support:appcompat-v7:$support_version"
     compile "com.android.support:support-v13:$support_version"
     compile "com.android.support:design:$support_version"
+    compile 'com.android.support:multidex:1.0.0'
     compile "com.squareup.retrofit:converter-jackson:$retrofit_version"
     compile "com.squareup.retrofit:converter-gson:$retrofit_version"
     compile "com.squareup.okhttp:logging-interceptor:$okhttp_version"
