@@ -30,6 +30,9 @@ public class Message extends RealmObject {
     @Expose
     private String body;
 
+    public Message() {
+    }
+
     public Message(String from, String to, String subject, String body) {
         this.from = from;
         this.to = to;
