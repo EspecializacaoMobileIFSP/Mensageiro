@@ -6,14 +6,18 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
 /**
  * @author maiko.trindade
  * @since 19/06/2016
  */
-public class Contact implements Parcelable {
+public class Contact extends RealmObject implements Parcelable {
 
     @SerializedName("id")
     @Expose
+    @PrimaryKey
     private long id;
 
     @SerializedName("nome_completo")
@@ -23,6 +27,9 @@ public class Contact implements Parcelable {
     @SerializedName("apelido")
     @Expose
     private String nickName;
+
+    public Contact() {
+    }
 
     public Contact(String fullName, String nickName) {
         this.fullName = fullName;

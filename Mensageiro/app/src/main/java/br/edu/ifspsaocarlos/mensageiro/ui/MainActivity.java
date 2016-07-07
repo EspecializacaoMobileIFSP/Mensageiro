@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import br.edu.ifspsaocarlos.mensageiro.R;
 import br.edu.ifspsaocarlos.mensageiro.model.Account;
+import br.edu.ifspsaocarlos.mensageiro.model.Contact;
 import br.edu.ifspsaocarlos.mensageiro.service.MessageService;
 import br.edu.ifspsaocarlos.mensageiro.ui.contract.BaseActivityView;
 import br.edu.ifspsaocarlos.mensageiro.util.MessengerApplication;
@@ -69,7 +70,14 @@ public class MainActivity extends AppCompatActivity implements BaseActivityView 
             String contactId = extras.getString("contactId");
             String messageId = extras.getString("messageId");
 
-            //TODO goTo somewhere according to contactId and messageId
+            Contact contact = new Contact();
+            contact.setId(Long.parseLong(contactId));
+
+            MessagesListFragment messagesListFragment = new MessagesListFragment();
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("contact_parcel", contact);
+            messagesListFragment.setArguments(bundle);
+            changeFragment(messagesListFragment, contact.getNickName());
 
             Toast.makeText(this, "ContactId = " + contactId +
                     " | messageId = " + messageId, Toast.LENGTH_LONG).show();

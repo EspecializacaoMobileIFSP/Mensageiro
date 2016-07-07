@@ -5,6 +5,8 @@ import android.text.TextUtils;
 
 import br.edu.ifspsaocarlos.mensageiro.model.Account;
 import br.edu.ifspsaocarlos.mensageiro.model.Contact;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 /**
  * @author maiko.trindade
@@ -14,9 +16,19 @@ public class MessengerApplication extends Application {
 
     private static MessengerApplication sInstance;
     private static Account sAccount;
+    private static Realm sRealm;
 
     public static MessengerApplication getInstance() {
         return sInstance;
+    }
+
+    public Realm getRealmInstance() {
+        if (sRealm == null) {
+            RealmConfiguration config = new RealmConfiguration.Builder(getApplicationContext()).build();
+            Realm.setDefaultConfiguration(config);
+            sRealm = Realm.getDefaultInstance();
+        }
+        return sRealm;
     }
 
     @Override
@@ -47,4 +59,5 @@ public class MessengerApplication extends Application {
     public Account getAccount() {
         return sAccount;
     }
+
 }

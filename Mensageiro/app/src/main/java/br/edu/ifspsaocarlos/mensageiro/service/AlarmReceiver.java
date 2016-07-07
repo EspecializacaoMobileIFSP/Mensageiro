@@ -16,6 +16,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 MessageService.service.isRunning()) {
             //TODO finish this implementation
             MessageService.service.dotheMagic(intent);
+            MessageService.service.getContacts();
         }
     }
 }

@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by denis on 23/06/16.
@@ -12,6 +13,7 @@ public class Message extends RealmObject {
 
     @SerializedName("id")
     @Expose
+    @PrimaryKey
     private long id;
 
     @SerializedName("origem_id")

@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,15 +14,13 @@ import java.util.List;
 
 import br.edu.ifspsaocarlos.mensageiro.R;
 import br.edu.ifspsaocarlos.mensageiro.model.Contact;
-import br.edu.ifspsaocarlos.mensageiro.networking.BaseNetworkConfig;
-import br.edu.ifspsaocarlos.mensageiro.networking.ContactsInterface;
-import br.edu.ifspsaocarlos.mensageiro.networking.ContactsList;
 import br.edu.ifspsaocarlos.mensageiro.ui.adapter.ContactsListAdapter;
 import br.edu.ifspsaocarlos.mensageiro.ui.callback.MessageListCallback;
 import br.edu.ifspsaocarlos.mensageiro.ui.contract.BaseActivityView;
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Retrofit;
+import br.edu.ifspsaocarlos.mensageiro.util.MessengerApplication;
+import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 
 /**
  * @author maiko.trindade
@@ -71,29 +68,10 @@ public class ContactsListFragment extends Fragment {
     }
 
     private void downloadContacts() {
-        final ContactsInterface service = BaseNetworkConfig.createService(ContactsInterface.class);
-        final Call<ContactsList> call = service.getContactsList();
-        call.enqueue(
-                new Callback<ContactsList>() {
-                    @Override
-                    public void onResponse(retrofit.Response<ContactsList> response,
-                                           Retrofit retrofit) {
-                        if (response.isSuccess()) {
-                            final ContactsList contactsList = response.body();
-                            List<Contact> contacts = contactsList.getContacts();
-                            configureRecyclerView(contacts);
-                        } else {
-                            mBaseView.showMessage(getView(), R.string.generic_error);
-                            Log.e(TAG, "unsuccessful download contacts");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Throwable t) {
-                        mBaseView.showMessage(getView(), R.string.generic_error);
-                        Log.e(TAG, "fail to download contact");
-                    }
-                }
-        );
+        Realm realm = MessengerApplication.getInstance().getRealmInstance();
+        RealmQuery<Contact> query = realm.where(Contact.class);
+        RealmResults<Contact> results = query.findAll();
+        List<Contact> contacts = results.subList(0, results.size());
+        configureRecyclerView(contacts);
     }
 }
