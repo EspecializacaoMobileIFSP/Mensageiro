@@ -9,5 +9,6 @@
     <string name="nickname">apelido</string>
 
     <string name="generic_error">Ops! Houve um erro ao processar sua solicitação.</string>
+    <string name="message_edit">Mensagem</string>
 
 </resources>

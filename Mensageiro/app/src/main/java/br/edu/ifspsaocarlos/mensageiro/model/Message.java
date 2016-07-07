@@ -3,10 +3,12 @@ package br.edu.ifspsaocarlos.mensageiro.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import io.realm.RealmObject;
+
 /**
  * Created by denis on 23/06/16.
  */
-public class Message {
+public class Message extends RealmObject {
 
     @SerializedName("id")
     @Expose
@@ -27,6 +29,13 @@ public class Message {
     @SerializedName("corpo")
     @Expose
     private String body;
+
+    public Message(String from, String to, String subject, String body) {
+        this.from = from;
+        this.to = to;
+        this.subject = subject;
+        this.body = body;
+    }
 
     public long getId() {
         return id;
