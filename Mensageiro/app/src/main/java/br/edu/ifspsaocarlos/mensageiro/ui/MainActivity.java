@@ -1,5 +1,6 @@
 package br.edu.ifspsaocarlos.mensageiro.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -7,9 +8,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Toast;
 
 import br.edu.ifspsaocarlos.mensageiro.R;
 import br.edu.ifspsaocarlos.mensageiro.model.Account;
+import br.edu.ifspsaocarlos.mensageiro.service.MessageService;
 import br.edu.ifspsaocarlos.mensageiro.ui.contract.BaseActivityView;
 import br.edu.ifspsaocarlos.mensageiro.util.MessengerApplication;
 
@@ -26,6 +29,8 @@ public class MainActivity extends AppCompatActivity implements BaseActivityView 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        startService();
+        onNewIntent(getIntent());
         verifyUserSession();
     }
 
@@ -34,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements BaseActivityView 
         if (account != null) {
             changeFragment(new ContactsListFragment(this), getString(R.string.contacts_list));
         } else {
-            changeFragment(new NewContactFragment(this), getString(R.string.new_account));
+            changeFragment(new LoginFragment(this), getString(R.string.new_account));
         }
     }
 
@@ -53,4 +58,21 @@ public class MainActivity extends AppCompatActivity implements BaseActivityView 
         Snackbar.make(view, getString(messageResourceId), Snackbar.LENGTH_SHORT).show();
     }
 
+    public void startService() {
+        startService(new Intent(MainActivity.this, MessageService.class));
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        Bundle extras = intent.getExtras();
+        if (extras != null && extras.containsKey("contactId") && extras.containsKey("messageId")) {
+            String contactId = extras.getString("contactId");
+            String messageId = extras.getString("messageId");
+
+            //TODO goTo somewhere according to contactId and messageId
+
+            Toast.makeText(this, "ContactId = " + contactId +
+                    " | messageId = " + messageId, Toast.LENGTH_LONG).show();
+        }
+    }
 }

@@ -20,7 +20,6 @@ import br.edu.ifspsaocarlos.mensageiro.networking.ContactsInterface;
 import br.edu.ifspsaocarlos.mensageiro.networking.ContactsList;
 import br.edu.ifspsaocarlos.mensageiro.ui.adapter.ContactsListAdapter;
 import br.edu.ifspsaocarlos.mensageiro.ui.callback.MessageListCallback;
-import br.edu.ifspsaocarlos.mensageiro.ui.component.DividerItemDecorator;
 import br.edu.ifspsaocarlos.mensageiro.ui.contract.BaseActivityView;
 import retrofit.Call;
 import retrofit.Callback;
@@ -54,8 +53,6 @@ public class ContactsListFragment extends Fragment {
     private void configureRecyclerView(List<Contact> contacts) {
         RecyclerView recyclerView = (RecyclerView)
                 mRootView.findViewById(R.id.contacts_recycler_view);
-        recyclerView.addItemDecoration(new DividerItemDecorator(getActivity(),
-                DividerItemDecorator.VERTICAL_LIST));
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(mRootView.getContext()));
         final ContactsListAdapter adapter = new ContactsListAdapter(contacts,

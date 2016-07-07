@@ -22,13 +22,13 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 
-public class NewContactFragment extends Fragment {
+public class LoginFragment extends Fragment {
 
-    private static final String TAG = NewContactFragment.class.getSimpleName();
+    private static final String TAG = LoginFragment.class.getSimpleName();
     private View mRootView;
     private BaseActivityView mBaseView;
 
-    public NewContactFragment(BaseActivityView view) {
+    public LoginFragment(BaseActivityView view) {
         mBaseView = view;
     }
 
@@ -38,7 +38,7 @@ public class NewContactFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        mRootView = inflater.inflate(R.layout.fragment_new_contact, container, false);
+        mRootView = inflater.inflate(R.layout.fragment_login, container, false);
 
         configureElements();
         return mRootView;

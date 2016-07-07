@@ -7,8 +7,8 @@
     <string name="Confirm">Confirmar</string>
     <string name="fullname">nome completo</string>
     <string name="nickname">apelido</string>
-
     <string name="generic_error">Ops! Houve um erro ao processar sua solicitação.</string>
     <string name="message_edit">Mensagem</string>
-
+    <string name="editar">Editar</string>
+    <string name="deletar">Deletar</string>
 </resources>
