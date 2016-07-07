@@ -5,10 +5,10 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.Toast;
 
 import br.edu.ifspsaocarlos.mensageiro.R;
 import br.edu.ifspsaocarlos.mensageiro.model.Account;
@@ -16,6 +16,8 @@ import br.edu.ifspsaocarlos.mensageiro.model.Contact;
 import br.edu.ifspsaocarlos.mensageiro.service.MessageService;
 import br.edu.ifspsaocarlos.mensageiro.ui.contract.BaseActivityView;
 import br.edu.ifspsaocarlos.mensageiro.util.MessengerApplication;
+import io.realm.Realm;
+import io.realm.RealmQuery;
 
 /**
  * @author maiko.trindade
@@ -30,18 +32,43 @@ public class MainActivity extends AppCompatActivity implements BaseActivityView 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        startService();
-        onNewIntent(getIntent());
-        verifyUserSession();
+        Bundle extras = getIntent().getExtras();
+        if (extras != null && extras.containsKey("contactId") && extras.containsKey("messageId")) {
+            String contactId = extras.getString("contactId");
+            String messageId = extras.getString("messageId");
+
+            Realm realm = MessengerApplication.getInstance().getRealmInstance();
+            RealmQuery<Contact> query = realm.where(Contact.class);
+            Contact contact = query.equalTo("id", Long.parseLong(contactId)).findFirst();
+
+            MessagesListFragment messagesListFragment = new MessagesListFragment();
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("contact_parcel", contact);
+            messagesListFragment.setArguments(bundle);
+            initFragment(messagesListFragment, contact.getNickName());
+        } else {
+            startService();
+            onNewIntent(getIntent());
+            verifyUserSession();
+        }
     }
 
     private void verifyUserSession() {
         final Account account = MessengerApplication.getInstance().getAccount();
         if (account != null) {
-            changeFragment(new ContactsListFragment(this), getString(R.string.contacts_list));
+            initFragment(new ContactsListFragment(this), getString(R.string.contacts_list));
         } else {
-            changeFragment(new LoginFragment(this), getString(R.string.new_account));
+            initFragment(new LoginFragment(this), getString(R.string.new_account));
         }
+    }
+
+    public void initFragment(final Fragment fragment, final String title) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.content, fragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .commit();
+        setTitle(title);
     }
 
     @Override
@@ -50,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements BaseActivityView 
         fragmentManager.beginTransaction()
                 .replace(R.id.content, fragment)
                 .addToBackStack(fragment.getTag())
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .commit();
         setTitle(title);
     }
@@ -65,22 +93,5 @@ public class MainActivity extends AppCompatActivity implements BaseActivityView 
 
     @Override
     public void onNewIntent(Intent intent) {
-        Bundle extras = intent.getExtras();
-        if (extras != null && extras.containsKey("contactId") && extras.containsKey("messageId")) {
-            String contactId = extras.getString("contactId");
-            String messageId = extras.getString("messageId");
-
-            Contact contact = new Contact();
-            contact.setId(Long.parseLong(contactId));
-
-            MessagesListFragment messagesListFragment = new MessagesListFragment();
-            Bundle bundle = new Bundle();
-            bundle.putParcelable("contact_parcel", contact);
-            messagesListFragment.setArguments(bundle);
-            changeFragment(messagesListFragment, contact.getNickName());
-
-            Toast.makeText(this, "ContactId = " + contactId +
-                    " | messageId = " + messageId, Toast.LENGTH_LONG).show();
-        }
     }
 }

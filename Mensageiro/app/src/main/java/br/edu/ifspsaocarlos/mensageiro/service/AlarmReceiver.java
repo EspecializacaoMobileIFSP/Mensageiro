@@ -14,9 +14,11 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (MessageService.service != null &&
                 MessageService.service.isRunning()) {
-            //TODO finish this implementation
-            MessageService.service.dotheMagic(intent);
+            // TODO finish this implementation
+            // MessageService.service.dotheMagic(intent);
+
             MessageService.service.getContacts();
+            MessageService.service.getMessages();
         }
     }
 }

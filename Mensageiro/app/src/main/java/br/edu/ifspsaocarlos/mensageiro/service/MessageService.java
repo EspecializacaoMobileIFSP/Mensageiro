@@ -14,15 +14,23 @@ import android.util.Log;
 import java.util.List;
 
 import br.edu.ifspsaocarlos.mensageiro.R;
+import br.edu.ifspsaocarlos.mensageiro.model.Account;
 import br.edu.ifspsaocarlos.mensageiro.model.Contact;
+import br.edu.ifspsaocarlos.mensageiro.model.Message;
+import br.edu.ifspsaocarlos.mensageiro.model.MessageContact;
 import br.edu.ifspsaocarlos.mensageiro.networking.BaseNetworkConfig;
 import br.edu.ifspsaocarlos.mensageiro.networking.ContactsInterface;
 import br.edu.ifspsaocarlos.mensageiro.networking.ContactsList;
+import br.edu.ifspsaocarlos.mensageiro.networking.MessagesInterface;
+import br.edu.ifspsaocarlos.mensageiro.networking.MessagesList;
 import br.edu.ifspsaocarlos.mensageiro.ui.MainActivity;
 import br.edu.ifspsaocarlos.mensageiro.util.MessengerApplication;
 import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 import retrofit.Call;
 import retrofit.Callback;
+import retrofit.Response;
 import retrofit.Retrofit;
 
 /**
@@ -52,24 +60,22 @@ public class MessageService extends Service {
         isRunning = true;
     }
 
-    public void dotheMagic(Intent intent) {
-
-        //TODO firstly do the magic then show notification
-        showNotification("1", "1");
-
-    }
+//    public void dotheMagic(Intent intent) {
+//        showNotification("1", "1");
+//    }
 
     public void getContacts() {
-        final ContactsInterface service = BaseNetworkConfig.createService(ContactsInterface.class);
-        final Call<ContactsList> call = service.getContactsList();
+        ContactsInterface service = BaseNetworkConfig.createService(ContactsInterface.class);
+        Call<ContactsList> call = service.getContactsList();
         call.enqueue(
                 new Callback<ContactsList>() {
                     @Override
                     public void onResponse(retrofit.Response<ContactsList> response,
                                            Retrofit retrofit) {
                         if (response.isSuccess()) {
-                            final ContactsList contactsList = response.body();
+                            ContactsList contactsList = response.body();
                             List<Contact> contacts = contactsList.getContacts();
+
                             Realm realm = MessengerApplication.getInstance().getRealmInstance();
                             for (Contact contact : contacts) {
                                 realm.beginTransaction();
@@ -77,35 +83,142 @@ public class MessageService extends Service {
                                 realm.commitTransaction();
                             }
                         } else {
-                            Log.e(TAG, "unsuccessful download contacts");
+                            Log.e(TAG, "Unsuccessful download contacts list");
                         }
                     }
 
                     @Override
                     public void onFailure(Throwable t) {
-                        Log.e(TAG, "fail to download contact");
+                        Log.e(TAG, "Fail to download contacts list");
                     }
                 }
         );
     }
 
-    private void showNotification(String contactId, String messageId) {
+    public void getMessages() {
+        Account account = MessengerApplication.getInstance().getAccount();
+        if (account != null) {
+            MessagesInterface service = BaseNetworkConfig.createService(MessagesInterface.class);
+
+            Realm realm = MessengerApplication.getInstance().getRealmInstance();
+            RealmQuery<Contact> query = realm.where(Contact.class);
+            RealmResults<Contact> results = query.findAll();
+
+            for (Contact contact : results) {
+                RealmQuery<MessageContact> queryLastMessage = realm.where(MessageContact.class);
+                MessageContact messageContact = queryLastMessage
+                        .equalTo("from", account.getId())
+                        .findFirst();
+
+                Call<MessagesList> call = service.getMessagesList(
+                        (messageContact == null) ? "0" : String.valueOf(messageContact.getLastMessageId()),
+                        String.valueOf(account.getId()),
+                        String.valueOf(contact.getId())
+                );
+                call.enqueue(
+                        new Callback<MessagesList>() {
+                            @Override
+                            public void onResponse(Response<MessagesList> response,
+                                                   Retrofit retrofit) {
+                                if (response.isSuccess()) {
+                                    MessagesList messagesList = response.body();
+                                    List<Message> messages = messagesList.getMessages();
+
+                                    Realm realm = MessengerApplication.getInstance().getRealmInstance();
+                                    for (Message message : messages) {
+                                        realm.beginTransaction();
+                                        realm.insertOrUpdate(message);
+                                        realm.commitTransaction();
+                                    }
+
+                                    if (messages.size() > 1) {
+                                        Message message = messages.get(messages.size() - 1);
+                                        MessageContact messageContact = new MessageContact(message);
+
+                                        realm.beginTransaction();
+                                        realm.insertOrUpdate(messageContact);
+                                        realm.commitTransaction();
+                                    }
+                                } else {
+                                    Log.e(TAG, response.code() + " - " + response.message());
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Throwable t) {
+                                Log.e(TAG, t.getMessage());
+                            }
+                        }
+                );
+
+                queryLastMessage = realm.where(MessageContact.class);
+                messageContact = queryLastMessage
+                        .equalTo("from", contact.getId())
+                        .findFirst();
+
+                call = service.getMessagesList(
+                        (messageContact == null) ? "0" : String.valueOf(messageContact.getLastMessageId()),
+                        String.valueOf(contact.getId()),
+                        String.valueOf(account.getId())
+                );
+                call.enqueue(
+                        new Callback<MessagesList>() {
+                            @Override
+                            public void onResponse(Response<MessagesList> response,
+                                                   Retrofit retrofit) {
+                                if (response.isSuccess()) {
+                                    MessagesList messagesList = response.body();
+                                    List<Message> messages = messagesList.getMessages();
+
+                                    Realm realm = MessengerApplication.getInstance().getRealmInstance();
+                                    for (Message message : messages) {
+                                        realm.beginTransaction();
+                                        realm.insertOrUpdate(message);
+                                        realm.commitTransaction();
+                                    }
+
+                                    if (messages.size() > 1) {
+                                        Message message = messages.get(messages.size() - 1);
+                                        MessageContact messageContact = new MessageContact(message);
+
+                                        realm.beginTransaction();
+                                        realm.insertOrUpdate(messageContact);
+                                        realm.commitTransaction();
+
+                                        showNotification(
+                                                message.getFrom(),
+                                                String.valueOf(message.getId()),
+                                                message.getBody()
+                                        );
+                                    }
+                                } else {
+                                    Log.e(TAG, response.code() + " - " + response.message());
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Throwable t) {
+                                Log.e(TAG, t.getMessage());
+                            }
+                        }
+                );
+            }
+        }
+    }
+
+    private void showNotification(String contactId, String messageId, String message) {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle(getString(R.string.app_name))
                         .setPriority(Notification.PRIORITY_MAX)
                         //TODO customize it
-                        .setContentText("New Messages");
+                        .setContentText(message);
 
         final Intent resultIntent = new Intent(this, MainActivity.class);
 
-        //resultIntent.putExtra("contactId", contactId);
-        //resultIntent.putExtra("messageId", messageId);
-
-        //TODO remove mock
-        resultIntent.putExtra("contactId", "CONTATO ID 123123");
-        resultIntent.putExtra("messageId", "MENSAGEM ID 123123");
+        resultIntent.putExtra("contactId", contactId);
+        resultIntent.putExtra("messageId", messageId);
 
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -133,5 +246,4 @@ public class MessageService extends Service {
     public IBinder onBind(Intent intent) {
         return null;
     }
-
 }

@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import br.edu.ifspsaocarlos.mensageiro.R;
+import br.edu.ifspsaocarlos.mensageiro.model.Account;
 import br.edu.ifspsaocarlos.mensageiro.model.Contact;
 import br.edu.ifspsaocarlos.mensageiro.ui.adapter.ContactsListAdapter;
 import br.edu.ifspsaocarlos.mensageiro.ui.callback.MessageListCallback;
@@ -43,7 +44,7 @@ public class ContactsListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mRootView = inflater.inflate(R.layout.fragment_contacts_list, container, false);
-        downloadContacts();
+        retrieveContacts();
         return mRootView;
     }
 
@@ -67,10 +68,11 @@ public class ContactsListFragment extends Fragment {
         recyclerView.setAdapter(adapter);
     }
 
-    private void downloadContacts() {
+    private void retrieveContacts() {
+        Account account = MessengerApplication.getInstance().getAccount();
         Realm realm = MessengerApplication.getInstance().getRealmInstance();
         RealmQuery<Contact> query = realm.where(Contact.class);
-        RealmResults<Contact> results = query.findAll();
+        RealmResults<Contact> results = query.notEqualTo("id", account.getId()).findAll();
         List<Contact> contacts = results.subList(0, results.size());
         configureRecyclerView(contacts);
     }
