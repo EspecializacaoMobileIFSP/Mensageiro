@@ -76,4 +76,10 @@ public class ContactsListFragment extends Fragment {
         List<Contact> contacts = results.subList(0, results.size());
         configureRecyclerView(contacts);
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().setTitle(getString(R.string.contacts_list));
+    }
 }

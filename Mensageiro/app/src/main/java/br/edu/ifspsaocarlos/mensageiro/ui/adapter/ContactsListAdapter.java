@@ -1,8 +1,11 @@
 package br.edu.ifspsaocarlos.mensageiro.ui.adapter;
 
-import android.content.Context;
+import android.support.design.widget.Snackbar;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -13,13 +16,23 @@ import java.util.List;
 
 import br.edu.ifspsaocarlos.mensageiro.R;
 import br.edu.ifspsaocarlos.mensageiro.model.Contact;
+import br.edu.ifspsaocarlos.mensageiro.networking.BaseNetworkConfig;
+import br.edu.ifspsaocarlos.mensageiro.networking.ContactsInterface;
 import br.edu.ifspsaocarlos.mensageiro.ui.callback.MessageListCallback;
+import br.edu.ifspsaocarlos.mensageiro.util.MessengerApplication;
+import io.realm.Realm;
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * @author maiko.trindade
  * @since 19/06/2016
  */
 public class ContactsListAdapter extends RecyclerView.Adapter<ContactsListAdapter.ViewHolder> {
+
+    private final static String TAG = ContactsListAdapter.class.getSimpleName();
 
     private List<Contact> mContacts;
     private MessageListCallback mMessageCallback;
@@ -47,7 +60,7 @@ public class ContactsListAdapter extends RecyclerView.Adapter<ContactsListAdapte
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        final Context context = holder.itemView.getContext();
+        final View contextView = holder.itemView;
         final Contact contact = mContacts.get(position);
 
         holder.mFullNameTxtView.setText(contact.getFullName());
@@ -62,15 +75,53 @@ public class ContactsListAdapter extends RecyclerView.Adapter<ContactsListAdapte
         });
         holder.mMenuImageView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-//                mPosition = holder.getLayoutPosition();
-//                final PopupMenu popup = new PopupMenu(context, v);
-//                popup.setOnMenuItemClickListener((PopupMenu.OnMenuItemClickListener) context);
-//                popup.inflate(R.menu.menu_contact_list_popup);
-//                popup.show();
+            public void onClick(View view) {
+                showPopupMenu(view, contextView, contact);
             }
         });
+    }
 
+    private void showPopupMenu(final View view, final View contextView, final Contact contact) {
+        PopupMenu popup = new PopupMenu(contextView.getContext(), view);
+        popup.getMenuInflater().inflate(R.menu.menu_contact_list_popup, popup.getMenu());
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.actionDelete:
+                        deleteContact(contextView, contact);
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
+        popup.show();
+    }
+
+    private void deleteContact(final View contextView, final Contact contact) {
+        final ContactsInterface service = BaseNetworkConfig.createService(ContactsInterface.class);
+        Call<Contact> response = service.deleteContact(String.valueOf(contact.getId()));
+
+        response.enqueue(new Callback<Contact>() {
+            @Override
+            public void onResponse(Response<Contact> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    Realm realm = MessengerApplication.getInstance().getRealmInstance();
+                    realm.beginTransaction();
+                    realm.insertOrUpdate(contact);
+                    realm.commitTransaction();
+                    Snackbar.make(contextView, R.string.deleted_contact, Snackbar.LENGTH_LONG)
+                            .show();
+                } else {
+                    Log.d(TAG, "unsuccessful response");
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d(TAG, "failure to delete contact");
+            }
+        });
     }
 
     @Override

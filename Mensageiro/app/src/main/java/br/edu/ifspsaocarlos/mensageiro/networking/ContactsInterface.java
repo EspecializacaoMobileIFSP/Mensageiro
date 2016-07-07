@@ -24,5 +24,5 @@ public interface ContactsInterface {
     Call<Contact> editContact(@Body Contact contact, @Path("id") String id);
 
     @DELETE("/sdm/mensageiro/contato/{id}")
-    Call<Contact> editContact(@Path("id") String id);
+    Call<Contact> deleteContact(@Path("id") String id);
 }

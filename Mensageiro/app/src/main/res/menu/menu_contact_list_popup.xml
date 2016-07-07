@@ -3,13 +3,8 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".controllers.ServiceOrderActivity">
 
-
-    <item
-        android:id="@+id/actionEdit"
-        android:title="@string/editar"/>
-
     <item
         android:id="@+id/actionDelete"
-        android:title="@string/deletar"/>
+        android:title="@string/delete"/>
 
 </menu>
