@@ -68,8 +68,11 @@ public class ContactsListFragment extends Fragment {
             AboutFragment fragment = new AboutFragment();
             mBaseView.changeFragment(fragment, getString(R.string.action_about));
             return true;
+        } else if (id == R.id.action_edit_profile) {
+            mBaseView.changeFragment(new EditContactFragment(mBaseView),
+                    getString(R.string.edit_account));
+            return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 

@@ -1,31 +1,33 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="8dp"
-    android:weightSum="3"
-    tools:context="br.edu.ifspsaocarlos.mensageiro.ui.AboutFragment">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:padding="8dp"
+              android:weightSum="3"
+              tools:context="br.edu.ifspsaocarlos.mensageiro.ui.AboutFragment">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_margin="16dp"
         android:layout_weight="1"
         android:contentDescription="@string/icon"
-        android:src="@drawable/mensageiro" />
+        android:src="@drawable/mensageiro"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="8dp"
         android:gravity="center"
         android:text="@string/about_text_view"
-        android:textSize="36sp" />
+        android:textSize="36sp"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/about_description_text_view"
-        android:textSize="16sp" />
+        android:textSize="16sp"/>
 
 </LinearLayout>
