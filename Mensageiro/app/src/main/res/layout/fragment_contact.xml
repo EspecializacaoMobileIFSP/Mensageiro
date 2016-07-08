@@ -12,20 +12,23 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:contentDescription="@string/icon"
-        android:src="@drawable/mensageiro" />
+        android:src="@drawable/mensageiro"
+        android:layout_margin="16dp"/>
 
     <TextView
         android:id="@+id/full_name_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textSize="36sp" />
+        android:textSize="36sp"
+        android:layout_margin="16dp"/>
 
     <TextView
         android:id="@+id/nick_name_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        android:layout_margin="16dp"/>
 
 </LinearLayout>

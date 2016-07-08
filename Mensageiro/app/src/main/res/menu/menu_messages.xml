@@ -3,8 +3,8 @@
 
     <item
         android:id="@+id/action_contact"
-        android:icon="@mipmap/ic_edittext_contact"
+        android:icon="@drawable/ic_contact_page"
         android:title="@string/action_contact"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
 </menu>
