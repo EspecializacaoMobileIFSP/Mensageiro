@@ -1,6 +1,7 @@
 package br.edu.ifspsaocarlos.mensageiro.ui.adapter;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,15 +43,20 @@ public class MessagesListAdapter extends RecyclerView.Adapter<MessagesListAdapte
                 holder.messageLytView.getLayoutParams();
 
         if (message.getFrom().equals(mOwn)) {
-            holder.messageLytView.setBackgroundResource(R.drawable.message_background);
+            holder.messageLytView.setBackgroundResource(R.drawable.message_background_from);
             params.gravity = Gravity.START;
         } else {
-            holder.messageLytView.setBackgroundResource(R.drawable.message_background2);
+            holder.messageLytView.setBackgroundResource(R.drawable.message_background_to);
             params.gravity = Gravity.END;
         }
         holder.messageLytView.setLayoutParams(params);
 
-        holder.subjectTxtView.setText(message.getSubject());
+        if (!TextUtils.isEmpty(message.getSubject())) {
+            holder.subjectTxtView.setText(message.getSubject());
+        } else {
+            holder.subjectTxtView.setVisibility(View.GONE);
+        }
+
         holder.bodyTxtView.setText(message.getBody());
     }
 
