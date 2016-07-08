@@ -14,4 +14,10 @@
     <string name="delete">Deletar</string>
     <string name="deleted_contact">Contato removido com sucesso</string>
     <string name="edited_successfully">Conta atualizada com sucesso</string>
+    <string name="action_about">Sobre</string>
+    <string name="action_contact">Contato</string>
+    <string name="icon">Icone</string>
+    <string name="about_text_view">Sobre</string>
+    <string name="about_description_text_view"></string>
+
 </resources>

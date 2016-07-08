@@ -9,6 +9,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -24,6 +27,7 @@ import br.edu.ifspsaocarlos.mensageiro.networking.BaseNetworkConfig;
 import br.edu.ifspsaocarlos.mensageiro.networking.MessagesInterface;
 import br.edu.ifspsaocarlos.mensageiro.networking.MessagesList;
 import br.edu.ifspsaocarlos.mensageiro.ui.adapter.MessagesListAdapter;
+import br.edu.ifspsaocarlos.mensageiro.ui.contract.BaseActivityView;
 import br.edu.ifspsaocarlos.mensageiro.util.MessengerApplication;
 import io.realm.Realm;
 import io.realm.RealmQuery;
@@ -40,24 +44,33 @@ public class MessagesListFragment extends Fragment implements View.OnClickListen
 
     private static final String TAG = MessagesListFragment.class.getSimpleName();
     private View mRootView;
+    private BaseActivityView mBaseView;
+    private String mTitle;
 
     private String from;
     private String to;
 
-    private int mInterval = 5000;
+    private static final int mInterval = 3000;
     private Handler mHandler;
 
-    public MessagesListFragment() {
+    public MessagesListFragment(BaseActivityView view, String title) {
+        mBaseView = view;
+        mTitle = title;
         from = String.valueOf(
                 MessengerApplication.getInstance().getAccount().getId()
         );
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
         mRootView = inflater.inflate(R.layout.fragment_messages_list, container, false);
         mRootView.findViewById(R.id.send_image_button).setOnClickListener(this);
         handleMessages();
@@ -65,11 +78,35 @@ public class MessagesListFragment extends Fragment implements View.OnClickListen
         return mRootView;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_messages, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_contact) {
+            ContactFragment fragment = new ContactFragment();
+            fragment.setArguments(getArguments());
+            mBaseView.changeFragment(fragment, getString(R.string.action_contact));
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().setTitle(mTitle);
+    }
+
     private void handleMessages() {
         if (getArguments() != null) {
             final Contact contact = getArguments().getParcelable("contact_parcel");
             to = String.valueOf(contact.getId());
-            retrieveMessages(to);
+            retrieveMessages();
         }
     }
 
@@ -78,7 +115,7 @@ public class MessagesListFragment extends Fragment implements View.OnClickListen
         startRepeatingTask();
     }
 
-    private void retrieveMessages(String toContact) {
+    private void retrieveMessages() {
         Realm realm = MessengerApplication.getInstance().getRealmInstance();
         RealmQuery<Message> query = realm.where(Message.class);
         RealmResults<Message> results = query.beginGroup()
@@ -130,7 +167,7 @@ public class MessagesListFragment extends Fragment implements View.OnClickListen
                         realm.beginTransaction();
                         realm.insertOrUpdate(message);
                         realm.commitTransaction();
-                        retrieveMessages(to);
+                        retrieveMessages();
                     }
                 } else {
                     Log.d(TAG, "Unsuccessful send message");
@@ -262,6 +299,6 @@ public class MessagesListFragment extends Fragment implements View.OnClickListen
                     }
                 }
         );
-        retrieveMessages(to);
+        retrieveMessages();
     }
 }
