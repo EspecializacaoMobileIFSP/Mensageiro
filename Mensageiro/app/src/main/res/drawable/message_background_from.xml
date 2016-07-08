@@ -5,8 +5,8 @@
     <item>
         <shape android:shape="rectangle">
 
-            <solid android:color="#9e9e9e" />
-            <corners android:radius="8dp" />
+            <solid android:color="#9e9e9e"/>
+            <corners android:radius="8dp"/>
 
         </shape>
     </item>
@@ -17,11 +17,10 @@
         <shape android:shape="rectangle">
             <gradient
                 android:angle="270"
-                android:endColor="#890a0e"
-                android:startColor="#e0e0e0" />
+                android:endColor="@color/material_yellow_100"
+                android:startColor="@color/material_yellow_50"/>
 
-
-            <corners android:radius="8dp" />
+            <corners android:radius="8dp"/>
         </shape>
 
     </item>
