@@ -36,6 +36,12 @@ public class Contact extends RealmObject implements Parcelable {
         this.nickName = nickName;
     }
 
+    public Contact(long id, String fullName, String nickName) {
+        this.id = id;
+        this.fullName = fullName;
+        this.nickName = nickName;
+    }
+
     public String getFullName() {
         return fullName;
     }

@@ -8,6 +8,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import br.edu.ifspsaocarlos.mensageiro.R;
@@ -25,12 +27,14 @@ import io.realm.RealmQuery;
  */
 public class MainActivity extends AppCompatActivity implements BaseActivityView {
 
+    private Toolbar mToolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null && extras.containsKey("contactId") && extras.containsKey("messageId")) {
@@ -84,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements BaseActivityView 
 
     @Override
     public void showMessage(View view, int messageResourceId) {
-        Snackbar.make(view, getString(messageResourceId), Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(view, messageResourceId, Snackbar.LENGTH_SHORT).show();
     }
 
     public void startService() {
@@ -93,5 +97,22 @@ public class MainActivity extends AppCompatActivity implements BaseActivityView 
 
     @Override
     public void onNewIntent(Intent intent) {
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_edit_profile) {
+            initFragment(new EditContactFragment(this), getString(R.string.edit_account));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

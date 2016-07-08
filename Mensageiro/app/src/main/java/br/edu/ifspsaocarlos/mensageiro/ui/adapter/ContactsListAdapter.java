@@ -108,7 +108,7 @@ public class ContactsListAdapter extends RecyclerView.Adapter<ContactsListAdapte
                 if (response.isSuccess()) {
                     Realm realm = MessengerApplication.getInstance().getRealmInstance();
                     realm.beginTransaction();
-                    realm.insertOrUpdate(contact);
+                    contact.deleteFromRealm();
                     realm.commitTransaction();
                     Snackbar.make(contextView, R.string.deleted_contact, Snackbar.LENGTH_LONG)
                             .show();
