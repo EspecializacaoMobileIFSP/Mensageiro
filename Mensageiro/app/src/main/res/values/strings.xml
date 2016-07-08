@@ -18,6 +18,12 @@
     <string name="action_contact">Contato</string>
     <string name="icon">Icone</string>
     <string name="about_text_view">Sobre</string>
-    <string name="about_description_text_view"></string>
-
+    <string name="about_description_text_view">
+        *** Mensageiro ***\n
+        Denis Oliveira - RA 150246-7\n
+        Maiko Trindade - RA 160262-X\n
+        \n*** Componentes ***
+        \nRetrofit
+        \nRealm
+    </string>
 </resources>
