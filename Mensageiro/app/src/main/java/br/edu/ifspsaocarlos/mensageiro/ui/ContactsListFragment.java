@@ -83,7 +83,7 @@ public class ContactsListFragment extends Fragment {
                     @Override
                     public void openContactMessages(Contact contact) {
                         final MessagesListFragment messagesListFragment = new
-                                MessagesListFragment(mBaseView);
+                                MessagesListFragment(mBaseView, contact.getNickName());
                         Bundle bundle = new Bundle();
                         bundle.putParcelable("contact_parcel", contact);
                         messagesListFragment.setArguments(bundle);

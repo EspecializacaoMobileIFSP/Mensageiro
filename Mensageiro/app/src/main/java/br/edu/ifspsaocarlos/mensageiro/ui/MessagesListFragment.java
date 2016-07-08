@@ -45,6 +45,7 @@ public class MessagesListFragment extends Fragment implements View.OnClickListen
     private static final String TAG = MessagesListFragment.class.getSimpleName();
     private View mRootView;
     private BaseActivityView mBaseView;
+    private String mTitle;
 
     private String from;
     private String to;
@@ -52,8 +53,9 @@ public class MessagesListFragment extends Fragment implements View.OnClickListen
     private static final int mInterval = 3000;
     private Handler mHandler;
 
-    public MessagesListFragment(BaseActivityView view) {
+    public MessagesListFragment(BaseActivityView view, String title) {
         mBaseView = view;
+        mTitle = title;
         from = String.valueOf(
                 MessengerApplication.getInstance().getAccount().getId()
         );
@@ -92,6 +94,12 @@ public class MessagesListFragment extends Fragment implements View.OnClickListen
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().setTitle(mTitle);
     }
 
     private void handleMessages() {
