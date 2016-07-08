@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements BaseActivityView 
             RealmQuery<Contact> query = realm.where(Contact.class);
             Contact contact = query.equalTo("id", Long.parseLong(contactId)).findFirst();
 
-            MessagesListFragment messagesListFragment = new MessagesListFragment();
+            MessagesListFragment messagesListFragment = new MessagesListFragment(this);
             Bundle bundle = new Bundle();
             bundle.putParcelable("contact_parcel", contact);
             messagesListFragment.setArguments(bundle);

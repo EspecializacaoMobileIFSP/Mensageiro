@@ -75,7 +75,7 @@ public class LoginFragment extends Fragment {
                     final Contact contact = response.body();
                     if (contact != null) {
                         MessengerApplication.getInstance().setAccount(contact);
-                        mBaseView.changeFragment(new ContactsListFragment(mBaseView),
+                        mBaseView.initFragment(new ContactsListFragment(mBaseView),
                                 getString(R.string.contacts_list));
                     }
                 } else {

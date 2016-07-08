@@ -12,4 +12,16 @@
     <string name="edit">Editar</string>
     <string name="delete">Deletar</string>
     <string name="deleted_contact">Contato removido com sucesso</string>
+    <string name="action_about">Sobre</string>
+    <string name="action_contact">Contato</string>
+    <string name="icon">Icone</string>
+    <string name="about_text_view">Sobre</string>
+    <string name="about_description_text_view">
+        *** Mensageiro ***\n
+        Denis Oliveira - RA 150246-7\n
+        Maiko Trindade - RA 15    -X\n
+        \n*** Componentes ***
+        \nRetrofit
+        \nRealm
+    </string>
 </resources>

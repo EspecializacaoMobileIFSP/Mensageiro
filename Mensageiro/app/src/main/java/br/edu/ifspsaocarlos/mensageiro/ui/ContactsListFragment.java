@@ -7,6 +7,9 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -37,15 +40,37 @@ public class ContactsListFragment extends Fragment {
         mBaseView = view;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
         mRootView = inflater.inflate(R.layout.fragment_contacts_list, container, false);
         retrieveContacts();
         return mRootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_contacts, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_about) {
+            AboutFragment fragment = new AboutFragment();
+            mBaseView.changeFragment(fragment, getString(R.string.action_about));
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void configureRecyclerView(List<Contact> contacts) {
@@ -58,7 +83,7 @@ public class ContactsListFragment extends Fragment {
                     @Override
                     public void openContactMessages(Contact contact) {
                         final MessagesListFragment messagesListFragment = new
-                                MessagesListFragment();
+                                MessagesListFragment(mBaseView);
                         Bundle bundle = new Bundle();
                         bundle.putParcelable("contact_parcel", contact);
                         messagesListFragment.setArguments(bundle);
