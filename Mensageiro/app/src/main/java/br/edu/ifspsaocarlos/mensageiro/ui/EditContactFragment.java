@@ -1,5 +1,8 @@
 package br.edu.ifspsaocarlos.mensageiro.ui;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import br.edu.ifspsaocarlos.mensageiro.R;
 import br.edu.ifspsaocarlos.mensageiro.model.Account;
@@ -33,6 +37,9 @@ public class EditContactFragment extends Fragment {
 
     private View mRootView;
     private BaseActivityView mBaseView;
+    private String mSelectedImagePath;
+    private ImageView mAddPicImageView;
+    private static final int SELECT_PICTURE = 1;
 
     public EditContactFragment(BaseActivityView view) {
         mBaseView = view;
@@ -51,15 +58,28 @@ public class EditContactFragment extends Fragment {
     }
 
     private void configureElements() {
-        final EditText mFullnameEdt = (EditText) mRootView.findViewById(R.id.fullname_edt_view);
-        final EditText mNicknameEdt = (EditText) mRootView.findViewById(R.id.nickname_edt_view);
-        final Button mConfirmButton = (Button) mRootView.findViewById(R.id.edit_button);
+        mAddPicImageView = (ImageView) mRootView.findViewById(R.id
+                .new_picture_image_view);
+        final EditText fullnameEdt = (EditText) mRootView.findViewById(R.id.fullname_edt_view);
+        final EditText nicknameEdt = (EditText) mRootView.findViewById(R.id.nickname_edt_view);
+        final Button confirmButton = (Button) mRootView.findViewById(R.id.edit_button);
 
-        mConfirmButton.setOnClickListener(new View.OnClickListener() {
+        mAddPicImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String fullname = mFullnameEdt.getText().toString();
-                final String nickname = mNicknameEdt.getText().toString();
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent,
+                        getActivity().getString(R.string.select_image)), SELECT_PICTURE);
+            }
+        });
+
+        confirmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String fullname = fullnameEdt.getText().toString();
+                final String nickname = nicknameEdt.getText().toString();
 
                 if (!TextUtils.isEmpty(fullname) && !TextUtils.isEmpty(nickname)) {
                     editAccount(fullname, nickname);
@@ -70,8 +90,8 @@ public class EditContactFragment extends Fragment {
         final Account account = MessengerApplication.getInstance().getAccount();
         if (account != null && !TextUtils.isEmpty(account.getFullName())
                 && !TextUtils.isEmpty(account.getNickName())) {
-            mFullnameEdt.setText(account.getFullName());
-            mNicknameEdt.setText(account.getNickName());
+            fullnameEdt.setText(account.getFullName());
+            nicknameEdt.setText(account.getNickName());
         }
 
     }
@@ -108,4 +128,14 @@ public class EditContactFragment extends Fragment {
         });
     }
 
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == SELECT_PICTURE) {
+                Uri selectedImageUri = data.getData();
+                if (selectedImageUri != null) {
+                    mAddPicImageView.setImageURI(selectedImageUri);
+                }
+            }
+        }
+    }
 }

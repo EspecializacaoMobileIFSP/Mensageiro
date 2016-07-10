@@ -1,7 +1,9 @@
 package br.edu.ifspsaocarlos.mensageiro.ui;
 
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -46,10 +48,10 @@ public class MessagesListFragment extends Fragment implements View.OnClickListen
     private View mRootView;
     private BaseActivityView mBaseView;
     private String mTitle;
-
     private String from;
     private String to;
-
+    private String mSelectedImagePath;
+    private static final int SELECT_PICTURE = 1;
     private static final int mInterval = 3000;
     private Handler mHandler;
 
@@ -72,7 +74,7 @@ public class MessagesListFragment extends Fragment implements View.OnClickListen
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mRootView = inflater.inflate(R.layout.fragment_messages_list, container, false);
-        mRootView.findViewById(R.id.send_image_button).setOnClickListener(this);
+        mRootView.findViewById(R.id.send_image_view).setOnClickListener(this);
         handleMessages();
         handleTask();
         return mRootView;
@@ -91,6 +93,12 @@ public class MessagesListFragment extends Fragment implements View.OnClickListen
             fragment.setArguments(getArguments());
             mBaseView.changeFragment(fragment, getString(R.string.action_contact));
             return true;
+        } else if (id == R.id.action_get_picture) {
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(intent,
+                    getActivity().getString(R.string.select_image)), SELECT_PICTURE);
         }
 
         return super.onOptionsItemSelected(item);
@@ -141,44 +149,56 @@ public class MessagesListFragment extends Fragment implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
-        EditText messageEditText = (EditText) mRootView.findViewById(R.id.message_edit_text);
-        String body = messageEditText.getText().toString();
-        messageEditText.setText("");
+        if (v.getId() == R.id.send_image_view) {
+            EditText messageEditText = (EditText) mRootView.findViewById(R.id.message_edit_text);
+            String body = messageEditText.getText().toString();
+            messageEditText.setText("");
 
-        View view = getActivity().getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
-                    Context.INPUT_METHOD_SERVICE
-            );
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
+            View view = getActivity().getCurrentFocus();
+            if (view != null) {
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
+                        Context.INPUT_METHOD_SERVICE
+                );
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
 
-        Message message = new Message(from, to, "", body);
-        final MessagesInterface service = BaseNetworkConfig.createService(MessagesInterface.class);
-        Call<Message> response = service.newMessage(message);
+            Message message = new Message(from, to, "", body);
+            final MessagesInterface service = BaseNetworkConfig.createService(MessagesInterface
+                    .class);
 
-        response.enqueue(new Callback<Message>() {
-            @Override
-            public void onResponse(Response<Message> response, Retrofit retrofit) {
-                if (response.isSuccess()) {
-                    final Message message = response.body();
-                    if (message != null) {
-                        Realm realm = MessengerApplication.getInstance().getRealmInstance();
-                        realm.beginTransaction();
-                        realm.insertOrUpdate(message);
-                        realm.commitTransaction();
-                        retrieveMessages();
+            Call<Message> response = service.newMessage(message);
+
+            response.enqueue(new Callback<Message>() {
+                @Override
+                public void onResponse(Response<Message> response, Retrofit retrofit) {
+                    if (response.isSuccess()) {
+                        final Message message = response.body();
+                        if (message != null) {
+                            Realm realm = MessengerApplication.getInstance().getRealmInstance();
+                            realm.beginTransaction();
+                            realm.insertOrUpdate(message);
+                            realm.commitTransaction();
+                            retrieveMessages();
+                        }
+                    } else {
+                        Log.d(TAG, "Unsuccessful send message");
                     }
-                } else {
-                    Log.d(TAG, "Unsuccessful send message");
                 }
-            }
 
-            @Override
-            public void onFailure(Throwable t) {
-                Log.d(TAG, "Fail to send a new message");
+                @Override
+                public void onFailure(Throwable t) {
+                    Log.d(TAG, "Fail to send a new message");
+                }
+            });
+        }
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == SELECT_PICTURE) {
+                //TODO do the magic
             }
-        });
+        }
     }
 
     @Override
@@ -301,4 +321,5 @@ public class MessagesListFragment extends Fragment implements View.OnClickListen
         );
         retrieveMessages();
     }
+
 }

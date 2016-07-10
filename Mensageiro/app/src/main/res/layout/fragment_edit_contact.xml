@@ -8,11 +8,21 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/margin_top_toolbar">
 
+    <ImageView
+        android:id="@+id/new_picture_image_view"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/new_picture"/>
+
     <TextView
         android:id="@+id/full_name_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/new_picture_image_view"
+        android:layout_marginTop="16dp"
         android:text="@string/fullname"/>
 
     <EditText
